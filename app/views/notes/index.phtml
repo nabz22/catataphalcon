@@ -1,0 +1,61 @@
+<?php
+// Note: Assets are managed, but we'll include CSS directly
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Catatan</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 CRUD Catatan</h1>
+            <a href="/notes/create" class="btn btn-primary">+ Tambah Catatan</a>
+        </div>
+
+        <?php if ($this->flashSession->has('success')): ?>
+            <div class="alert alert-success">
+                ✓ <?php echo $this->flashSession->output(); ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($this->flashSession->has('error')): ?>
+            <div class="alert alert-error">
+                ✗ <?php echo $this->flashSession->output(); ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (count($notes) > 0): ?>
+            <div class="notes-grid">
+                <?php foreach ($notes as $note): ?>
+                    <div class="note-card">
+                        <div class="note-header">
+                            <h3><?php echo htmlspecialchars((string)($note->judul ?? '')); ?></h3>
+                            <span class="date"><?php echo isset($note->tanggal) ? date('d M Y', strtotime($note->tanggal)) : ''; ?></span>
+                        </div>
+                        <div class="note-content">
+                            <?php 
+                                $isi = (string)($note->isi ?? '');
+                                $shortIsi = substr($isi, 0, 150);
+                                echo nl2br(htmlspecialchars($shortIsi));
+                                if (strlen($isi) > 150) echo '...';
+                            ?>
+                        </div>
+                        <div class="note-actions">
+                            <a href="/notes/edit/<?php echo $note->id; ?>" class="btn btn-secondary">Edit</a>
+                            <a href="/notes/delete/<?php echo $note->id; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus catatan ini?')">Hapus</a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <div class="empty-state">
+                <p>Belum ada catatan. <a href="/notes/create">Buat catatan pertama Anda!</a></p>
+            </div>
+        <?php endif; ?>
+    </div>
+</body>
+</html>

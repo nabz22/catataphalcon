@@ -1,0 +1,75 @@
+<?php
+// Note: Assets are managed, but we'll include CSS directly
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Catatan - CRUD Catatan</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1>Edit Catatan</h1>
+
+            <?php if ($this->flashSession->has('error')): ?>
+                <div class="alert alert-error">
+                    ✗ <?php echo $this->flashSession->output(); ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($this->flashSession->has('success')): ?>
+                <div class="alert alert-success">
+                    ✓ <?php echo $this->flashSession->output(); ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" action="/notes/edit/<?php echo $note->id; ?>">
+                <div class="form-group">
+                    <label for="judul">Judul:</label>
+                    <input 
+                        type="text" 
+                        id="judul" 
+                        name="judul" 
+                        class="form-control" 
+                        placeholder="Masukkan judul catatan"
+                        value="<?php echo htmlspecialchars((string)($note->judul ?? '')); ?>"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="isi">Isi Catatan:</label>
+                    <textarea 
+                        id="isi" 
+                        name="isi" 
+                        class="form-control" 
+                        placeholder="Masukkan isi catatan"
+                        rows="8"
+                        required
+                    ><?php echo htmlspecialchars((string)($note->isi ?? '')); ?></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="tanggal">Tanggal:</label>
+                    <input 
+                        type="date" 
+                        id="tanggal" 
+                        name="tanggal" 
+                        class="form-control"
+                        value="<?php echo isset($note->tanggal) ? $note->tanggal : date('Y-m-d'); ?>"
+                        required
+                    >
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Perbarui Catatan</button>
+                    <a href="/notes" class="btn btn-secondary">Batal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -224,14 +224,6 @@ Untuk deploy ke production server:
 Project ini bebas digunakan untuk keperluan pembelajaran dan pengembangan.
 
 ---
-
-## 🙏 Credits
-
-Dibuat dengan ❤️ untuk pembelajaran PHP & MySQL.
-
-**Version:** 1.0  
-**Last Updated:** January 8, 2024
-
 ---
 
 **👉 MULAI SEKARANG: Baca `notes-app/README_SETUP.md` untuk panduan lengkap!**

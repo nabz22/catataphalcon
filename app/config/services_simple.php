@@ -2,8 +2,8 @@
 
 namespace {
 
-// Load Models - BaseModel and all app classes
-require APP_PATH . '/models/BaseModel.php';
+// Load Models - BaseModel and all app classes (pastikan hanya sekali)
+require_once APP_PATH . '/models/BaseModel.php';
 
 // Ensure autoloader is registered
 if (!function_exists('\spl_autoload_functions') || empty(spl_autoload_functions())) {

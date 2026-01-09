@@ -29,8 +29,10 @@ COPY .htaccess /var/www/html/.htaccess
 COPY .htrouter.php /var/www/html/.htrouter.php
 COPY app /var/www/html/app
 COPY public /var/www/html/public
-COPY cache /var/www/html/cache
 COPY index.html /var/www/html/index.html
+
+# Create cache directory
+RUN mkdir -p /var/www/html/cache
 
 # Copy Apache config
 COPY docker/vhost.conf /etc/apache2/sites-available/000-default.conf

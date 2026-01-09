@@ -2,6 +2,12 @@
 
 namespace App\Models;
 
+// Safety guard: jika class sudah pernah dideklarasikan di request ini,
+// hentikan eksekusi file untuk mencegah "Cannot declare class ... already in use"
+if (class_exists(__NAMESPACE__ . '\\BaseModel', false)) {
+    return;
+}
+
 /**
  * Simple Model base class (without Phalcon)
  */

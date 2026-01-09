@@ -14,7 +14,7 @@ require APP_PATH . '/config/loader.php';
 // CRITICAL FIX: Pre-load all essential classes before DI setup
 // This ensures they are available when controllers try to use them
 $_essential_classes = [
-    'App\\Models\\BaseModel' => APP_PATH . '/models/BaseModel.php',
+    // BaseModel sudah di-load lewat services_simple.php (require_once)
     'App\\Models\\Notes' => APP_PATH . '/models/Notes.php',
     'App\\Controllers\\NotesController' => APP_PATH . '/controllers/NotesController.php',
     'App\\Controllers\\IndexController' => APP_PATH . '/controllers/IndexController.php',

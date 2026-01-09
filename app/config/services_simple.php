@@ -127,21 +127,31 @@ class SimpleDb {
     private $connection;
     
     public function __construct($host, $username, $password, $dbname) {
+        // Matikan mode exception bawaan mysqli agar bisa kita-retry manual
+        if (function_exists('mysqli_report')) {
+            mysqli_report(MYSQLI_REPORT_OFF);
+        }
+
         // Tambahkan retry supaya tidak error "Connection refused" saat MySQL baru startup
         $maxAttempts = 5;
         $attempt = 0;
         $lastError = null;
 
         while ($attempt < $maxAttempts) {
-            $this->connection = @new mysqli($host, $username, $password, $dbname);
-            
-            if (!$this->connection->connect_error) {
-                // Sukses
-                $this->connection->set_charset('utf8mb4');
-                return;
+            try {
+                $this->connection = @new mysqli($host, $username, $password, $dbname);
+                
+                if (!$this->connection->connect_error) {
+                    // Sukses
+                    $this->connection->set_charset('utf8mb4');
+                    return;
+                }
+
+                $lastError = $this->connection->connect_error;
+            } catch (\mysqli_sql_exception $e) {
+                $lastError = $e->getMessage();
             }
 
-            $lastError = $this->connection->connect_error;
             $attempt++;
             // Tunggu sebentar sebelum coba lagi
             sleep(1);

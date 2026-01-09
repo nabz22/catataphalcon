@@ -16,6 +16,8 @@ require APP_PATH . '/config/loader.php';
 $_essential_classes = [
     // Pastikan BaseModel selalu tersedia lebih dulu
     'App\\Models\\BaseModel' => APP_PATH . '/models/BaseModel.php',
+    // Pastikan base controller tersedia sebelum controller lain
+    'App\\Controllers\\ControllerBase' => APP_PATH . '/controllers/ControllerBase.php',
     'App\\Models\\Notes' => APP_PATH . '/models/Notes.php',
     'App\\Controllers\\NotesController' => APP_PATH . '/controllers/NotesController.php',
     'App\\Controllers\\IndexController' => APP_PATH . '/controllers/IndexController.php',

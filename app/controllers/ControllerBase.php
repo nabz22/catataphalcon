@@ -3,9 +3,20 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use Phalcon\Mvc\Controller;
-
-class ControllerBase extends Controller
+/**
+ * Simple base controller (tanpa dependency Phalcon extension)
+ * Dipakai oleh controller generik seperti IndexController.
+ */
+class ControllerBase
 {
-    // Implement common logic
+    /** @var mixed */
+    protected $di;
+
+    /**
+     * Disuntik dari front controller (public/index.php)
+     */
+    public function _setDi($di): void
+    {
+        $this->di = $di;
+    }
 }

@@ -1,92 +1,121 @@
 #!/bin/bash
+# Master Deployment Script untuk Server 192.168.0.73
+# Deploy ke: /home/fdx/dockerizer/ dengan struktur subfolder
 
-# Phalcon Deployment Script
-# Deploy ke: /home/fdx/dockerizer/catataphalcon
-
-set -e  # Exit on error
+SERVER="192.168.0.73"
+USER="fdx"
+DEPLOY_BASE="/home/fdx/dockerizer"
 
 echo "=========================================="
-echo "🚀 Starting Phalcon Deployment"
+echo "🚀 STARTING DEPLOYMENT TO REMOTE SERVER"
 echo "=========================================="
+echo "Target: $USER@$SERVER"
+echo "Deploy Path: $DEPLOY_BASE"
+echo ""
 
-# Setup direktori
-DEPLOY_DIR="/home/fdx/dockerizer/catataphalcon"
-REPO_URL="https://github.com/nabz22/catataphalcon.git"
+# 1. Create base directory
+echo "📁 Creating base directory..."
+ssh -o StrictHostKeyChecking=no $USER@$SERVER "mkdir -p $DEPLOY_BASE && echo '✅ Directory created'"
 
-echo "📁 Setting up deployment directory: $DEPLOY_DIR"
-mkdir -p /home/fdx/dockerizer
-cd /home/fdx/dockerizer
+echo ""
+echo "=========================================="
+echo "📥 CLONING/UPDATING REPOSITORIES"
+echo "=========================================="
+echo ""
 
-# Clone atau update repo
-if [ -d "$DEPLOY_DIR" ]; then
-    echo "📥 Repository exists, updating..."
-    cd "$DEPLOY_DIR"
-    git pull origin main
+# 2. Clone or update catataphalcon
+echo "📦 Deploying catataphalcon..."
+ssh -o StrictHostKeyChecking=no $USER@$SERVER << 'SSHEOF'
+DEPLOY_BASE="/home/fdx/dockerizer"
+cd $DEPLOY_BASE
+
+if [ -d "catataphalcon" ]; then
+    echo "  📥 Updating existing repository..."
+    cd catataphalcon
+    git pull origin main 2>/dev/null || git pull origin master
 else
-    echo "📥 Cloning repository..."
-    git clone "$REPO_URL" catataphalcon
-    cd "$DEPLOY_DIR"
+    echo "  📥 Cloning new repository..."
+    git clone https://github.com/nabz22/catataphalcon.git catataphalcon
 fi
 
+echo "  ✅ Repository ready"
 echo ""
-echo "✅ Repository ready"
-echo "📂 Contents:"
-ls -la | head -15
-
-echo ""
-echo "=========================================="
-echo "🐳 Setting up Docker"
-echo "=========================================="
-
-# Check docker & docker-compose
-if ! command -v docker &> /dev/null; then
-    echo "❌ Docker not installed. Please install Docker first."
-    exit 1
-fi
-
-if ! command -v docker-compose &> /dev/null; then
-    echo "❌ Docker Compose not installed. Please install it first."
-    exit 1
-fi
-
-echo "✅ Docker version: $(docker --version)"
-echo "✅ Docker Compose version: $(docker-compose --version)"
+echo "  📂 Repository contents:"
+ls -la catataphalcon | head -20
+SSHEOF
 
 echo ""
 echo "=========================================="
-echo "🔨 Building Docker images..."
+echo "🐳 CHECKING DOCKER"
 echo "=========================================="
+echo ""
 
-docker-compose build
+ssh -o StrictHostKeyChecking=no $USER@$SERVER << 'SSHEOF'
+echo "Docker version:"
+docker --version
+echo ""
+echo "Docker Compose version:"
+docker-compose --version || echo "Note: Use 'docker compose' on newer versions"
+SSHEOF
 
 echo ""
 echo "=========================================="
-echo "🚀 Starting containers..."
+echo "🔨 BUILDING DOCKER IMAGES"
 echo "=========================================="
+echo ""
 
+ssh -o StrictHostKeyChecking=no $USER@$SERVER << 'SSHEOF'
+cd /home/fdx/dockerizer/catataphalcon
+echo "Building images for catataphalcon..."
+docker-compose build --no-cache
+SSHEOF
+
+echo ""
+echo "=========================================="
+echo "🚀 STARTING CONTAINERS"
+echo "=========================================="
+echo ""
+
+ssh -o StrictHostKeyChecking=no $USER@$SERVER << 'SSHEOF'
+cd /home/fdx/dockerizer/catataphalcon
+echo "Starting containers..."
 docker-compose up -d
-
 echo ""
-echo "=========================================="
-echo "✅ Deployment Complete!"
-echo "=========================================="
-echo ""
-echo "📊 Container Status:"
+echo "Container status:"
 docker-compose ps
+SSHEOF
 
 echo ""
-echo "🌐 Access your application:"
-echo "  - App Phalcon: http://192.168.0.73:8080"
-echo "  - PhpMyAdmin:  http://192.168.0.73:8090"
+echo "=========================================="
+echo "✅ DEPLOYMENT COMPLETE!"
+echo "=========================================="
 echo ""
-echo "📝 Database Credentials:"
-echo "  - Host: localhost (dari dalam container)"
-echo "  - User: root / phalcon"
-echo "  - Password: root / phalcon123"
+echo "📝 SUMMARY"
+echo "=========================================="
 echo ""
-echo "📋 Useful commands:"
-echo "  - View logs:  docker-compose logs -f app"
-echo "  - Restart:    docker-compose restart"
-echo "  - Stop:       docker-compose stop"
-echo "  - Status:     docker-compose ps"
+echo "📂 Deployment Location: /home/fdx/dockerizer/catataphalcon"
 echo ""
+echo "🔗 Access Applications:"
+echo "  • App: http://192.168.0.73:8080"
+echo "  • PhpMyAdmin: http://192.168.0.73:8090"
+echo ""
+echo "💾 Database:"
+echo "  • Host: db (internal container name)"
+echo "  • User: root"
+echo "  • Password: root"
+echo ""
+echo "📋 Useful Commands:"
+echo ""
+echo "  View logs:"
+echo "  ssh -o StrictHostKeyChecking=no $USER@$SERVER 'cd /home/fdx/dockerizer/catataphalcon && docker-compose logs -f app'"
+echo ""
+echo "  Restart containers:"
+echo "  ssh -o StrictHostKeyChecking=no $USER@$SERVER 'cd /home/fdx/dockerizer/catataphalcon && docker-compose restart'"
+echo ""
+echo "  Stop containers:"
+echo "  ssh -o StrictHostKeyChecking=no $USER@$SERVER 'cd /home/fdx/dockerizer/catataphalcon && docker-compose stop'"
+echo ""
+echo "  SSH to server:"
+echo "  ssh -o StrictHostKeyChecking=no $USER@$SERVER"
+echo ""
+echo "=========================================="

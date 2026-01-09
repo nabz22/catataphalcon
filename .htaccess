@@ -1,5 +1,12 @@
 <IfModule mod_rewrite.c>
-	RewriteEngine on
-	RewriteRule  ^$ public/    [L]
-	RewriteRule  (.*) public/$1 [L]
+    RewriteEngine On
+    RewriteBase /
+    
+    # Allow access to existing files and directories
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+    
+    # If not public directory, rewrite to public
+    RewriteRule ^(?!public/)(.*)$ public/$1 [L]
 </IfModule>

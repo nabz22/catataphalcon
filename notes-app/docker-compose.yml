@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  notes-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: notes-app
+    ports:
+      - "8081:80"
+    volumes:
+      - ./public:/var/www/html/public
+      - ./config:/var/www/html/config
+    environment:
+      PHALCON_ENV: docker
+    networks:
+      - notes-network
+    depends_on:
+      - notes-db
+
+  notes-db:
+    image: mysql:8.0
+    container_name: notes-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: notes_db
+      MYSQL_USER: notes_user
+      MYSQL_PASSWORD: notes_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - notes_db_data:/var/lib/mysql
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - notes-network
+
+  notes-phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.2
+    container_name: notes-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8091:80"
+    environment:
+      PMA_HOST: notes-db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+    networks:
+      - notes-network
+    depends_on:
+      - notes-db
+
+volumes:
+  notes_db_data:
+
+networks:
+  notes-network:
+    driver: bridge

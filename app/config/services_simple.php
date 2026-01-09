@@ -2,8 +2,16 @@
 
 namespace {
 
-// Load Models
+// Load Models - BaseModel and all app classes
 require APP_PATH . '/models/BaseModel.php';
+
+// Ensure autoloader is registered
+if (!function_exists('\spl_autoload_functions') || empty(spl_autoload_functions())) {
+    // If no autoloaders registered, try to load loader again
+    if (file_exists(APP_PATH . '/config/loader.php')) {
+        require APP_PATH . '/config/loader.php';
+    }
+}
 
 // Simple View class
 class SimpleView {
